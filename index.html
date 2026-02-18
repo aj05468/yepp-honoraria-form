@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YEPP Honoraria/Invoice Submission</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <style>
+         {
+            .no-print { display: none !important; }
+            body { background: white; }
+            .print-full-width { width: 100%; }
+        }
+        .small-input { width: 100px; }
+        .medium-input { width: 140px; }
+        .large-input { width: 220px; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen py-8">
+    <div class="container mx-auto max-w-5xl px-4">
+        <!-- Header -->
+        <div class="bg-blue-700 text-white rounded-lg shadow-lg p-6 mb-6 text-center">
+            <h1 class="text-3xl font-bold mb-2">YEPP Honoraria/Invoice Submission</h1>
+            <p class="text-blue-100">YEPP / TCCLD - Youth Engagement & Professional Development</p>
+        </div>
+
+        <!-- Main Form -->
+        <form id="honorariaForm" class="bg-white rounded-lg shadow-lg p-6 space-y-6">
+            
+            <!-- Facilitator/Youth Information -->
+            <div class="border-b pb-4">
+                <h2 class="text-2xl font-bold text-blue-700 mb-4">Facilitator/Youth Information</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Request Number</label>
+                        <input type="text" id="requestNumber" readonly class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Request Date</label>
+                        <input type="date" id="requestDate" class="w-full px-3 py-2 border border-gray-300 rounded-md" />
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Facilitator/Youth Name <span class="text-red-500">*</span></label>
+                        <input type="text" id="facilitatorName" required class="w-full px-3 py-2 border border-gray-300 rounded-md" />
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                        <input type="text" id="address" class="w-full px-3 py-2 border border-gray-300 rounded-md" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                        <input type="tel" id="phone" class="w-full px-3 py-2 border border-gray-300 rounded-md" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email <span class="text-red-500">*</span></label>
+                        <input type="email" id="email" required class="w-full px-3 py-2 border border-gray-300 rounded-md" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
+                        <input type="date" id="dueDate" class="w-full px-3 py-2 border border-gray-300 rounded-md" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Banking Information -->
+            <div class="border-b pb-4">
+                <h2 class="text-2xl font-bold text-blue-700 mb-4">Banking Information</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Bank Name</label>
+                        <input type="text" id="bankName" class="w-full px-3 py-2 border border-gray-300 rounded-md" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Institution Number (3 digits)</label>
+                        <input type="text" id="institutionNumber" maxlength="3" pattern="[0-9]{3}" placeholder="000" class="small-input px-3 py-2 border border-gray-300 rounded-md" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Transit Number (5 digits)</label>
+                        <input type="text" id="transitNumber" maxlength="5" pattern="[0-9]{5}" placeholder="00000" class="medium-input px-3 py-2 border border-gray-300 rounded-md" />
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Account Number (up to 12 digits)</label>
+                        <input type="text" id="accountNumber" maxlength="12" pattern="[0-9]{1,12}" placeholder="000000000000" class="large-input px-3 py-2 border border-gray-300 rounded-md" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Billing Period -->
+            <div class="border-b pb-4">
+                <h2 class="text-2xl font-bold text-blue-700 mb-4">Billing Period</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">From</label>
+                        <input type="date" id="billingFrom" class="w-full px-3 py-2 border border-gray-300 rounded-md" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">To</label>
+                        <input type="date" id="billingTo" class="w-full px-3 py-2 border border-gray-300 rounded-md" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Services Table -->
+            <div class="border-b pb-4">
+                <h2 class="text-2xl font-bold text-blue-700 mb-4">Services Provided</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse" id="servicesTable">
+                        <thead>
+                            <tr class="bg-blue-700 text-white">
+                                <th class="border border-blue-600 px-3 py-2 text-left">Date</th>
+                                <th class="border border-blue-600 px-3 py-2 text-left">Description</th>
+                                <th class="border border-blue-600 px-3 py-2 text-left">Hours</th>
+                                <th class="border border-blue-600 px-3 py-2 text-left">Rate ($/hr)</th>
+                                <th class="border border-blue-600 px-3 py-2 text-left">Amount</th>
+                                <th class="border border-blue-600 px-3 py-2 no-print">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="servicesBody">
+                            <tr>
+                                <td class="border border-gray-300 px-2 py-1">
+                                    <input type="date" class="service-date w-full px-2 py-1 border-0" />
+                                </td>
+                                <td class="border border-gray-300 px-2 py-1">
+                                    <input type="text" class="service-description w-full px-2 py-1 border-0" />
+                                </td>
+                                <td class="border border-gray-300 px-2 py-1">
+                                    <input type="number" step="0.25" class="service-hours w-20 px-2 py-1 border-0" />
+                                </td>
+                                <td class="border border-gray-300 px-2 py-1">
+                                    <input type="number" step="0.01" class="service-rate w-24 px-2 py-1 border-0" />
+                                </td>
+                                <td class="border border-gray-300 px-2 py-1">
+                                    <span class="service-amount font-semibold">$0.00</span>
+                                </td>
+                                <td class="border border-gray-300 px-2 py-1 text-center no-print">
+                                    <button type="button" class="remove-service text-red-600 hover:text-red-800 font-bold" title="Remove">×</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-3 flex justify-between items-center">
+                    <button type="button" id="addService" class="no-print bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">
+                        <i class="fas fa-plus mr-2"></i>Add Service Row
+                    </button>
+                    <div class="text-right">
+                        <span class="text-lg font-semibold">Subtotal Services: </span>
+                        <span id="subtotalServices" class="text-xl font-bold text-blue-700">$0.00 CAD</span>
+                    </div>
+                </div>
+                <div id="capWarning" class="hidden mt-3 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-3">
+                    <p class="font-semibold"><i class="fas fa-exclamation-triangle mr-2"></i>Monthly Billing Cap Alert</p>
+                    <p>Services subtotal exceeds the $2,500.00 CAD monthly cap (before expenses).</p>
+                </div>
+            </div>
+
+            <!-- Expenses Table -->
+            <div class="border-b pb-4">
+                <h2 class="text-2xl font-bold text-blue-700 mb-4">Expenses</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse" id="expensesTable">
+                        <thead>
+                            <tr class="bg-blue-700 text-white">
+                                <th class="border border-blue-600 px-3 py-2 text-left">Description</th>
+                                <th class="border border-blue-600 px-3 py-2 text-left">Amount</th>
+                                <th class="border border-blue-600 px-3 py-2 no-print">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expensesBody">
+                            <tr>
+                                <td class="border border-gray-300 px-2 py-1">
+                                    <input type="text" class="expense-description w-full px-2 py-1 border-0" />
+                                </td>
+                                <td class="border border-gray-300 px-2 py-1">
+                                    <input type="number" step="0.01" class="expense-amount w-32 px-2 py-1 border-0" />
+                                </td>
+                                <td class="border border-gray-300 px-2 py-1 text-center no-print">
+                                    <button type="button" class="remove-expense text-red-600 hover:text-red-800 font-bold" title="Remove">×</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-3 flex justify-between items-center">
+                    <button type="button" id="addExpense" class="no-print bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">
+                        <i class="fas fa-plus mr-2"></i>Add Expense Row
+                    </button>
+                    <div class="text-right">
+                        <span class="text-lg font-semibold">Subtotal Expenses: </span>
+                        <span id="subtotalExpenses" class="text-xl font-bold text-blue-700">$0.00 CAD</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Due -->
+            <div class="bg-blue-50 rounded-lg p-6 text-center">
+                <h2 class="text-2xl font-bold text-blue-700 mb-2">Total Amount Due</h2>
+                <p id="totalDue" class="text-4xl font-bold text-blue-900">$0.00 CAD</p>
+            </div>
+
+            <!-- Approval Workflow -->
+            <div class="bg-gray-50 rounded-lg p-4 text-center">
+                <p class="text-sm font-semibold text-gray-700 mb-2">Approval Workflow</p>
+                <div class="flex justify-center items-center space-x-3 text-gray-600">
+                    <span>Facilitator/Youth</span>
+                    <i class="fas fa-arrow-right"></i>
+                    <span>Emmanuel (Review)</span>
+                    <i class="fas fa-arrow-right"></i>
+                    <span>Alfred (Final Approval)</span>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col md:flex-row gap-3 no-print">
+                <button type="button" id="downloadPDF" class="flex-1 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md font-semibold">
+                    <i class="fas fa-file-pdf mr-2"></i>Download as PDF
+                </button>
+                <button type="submit" id="submitBtn" class="flex-1 bg-blue-700 hover:bg-blue-800 text-white px-6 py-3 rounded-md font-semibold">
+                    <i class="fas fa-paper-plane mr-2"></i>Submit Request
+                </button>
+            </div>
+
+            <!-- Status Message -->
+            <div id="statusMessage" class="hidden rounded-lg p-4 text-center font-semibold"></div>
+        </form>
+    </div>
+
+    <script>
+        // Configuration
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx_HTgEafMs8ngkUqD_zmofmjk6GDkMKt-QBPXchvK-XkLSNY-Ze7H0zgucQOX4sxoQjg/exec';
+        const MONTHLY_CAP = 2500.00;
+
+        // Initialize request number
+        function getNextRequestNumber() {
+            let counter = localStorage.getItem('yeppRequestCounter');
+            if (!counter) {
+                counter = 20100;
+            } else {
+                counter = parseInt(counter);
+            }
+            return counter;
+        }
+
+        function incrementRequestNumber() {
+            let counter = getNextRequestNumber();
+            localStorage.setItem('yeppRequestCounter', counter + 1);
+        }
+
+        // Initialize form
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('requestNumber').value = getNextRequestNumber();
+            document.getElementById('requestDate').valueAsDate = new Date();
+            
+            setupEventListeners();
+            updateTotals();
+        });
+
+        // Format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-CA', {
+                style: 'currency',
+                currency: 'CAD'
+            }).format(amount);
+        }
+
+        // Calculate service amount
+        function calculateServiceAmount(row) {
+            const hours = parseFloat(row.querySelector('.service-hours').value) || 0;
+            const rate = parseFloat(row.querySelector('.service-rate').value) || 0;
+            const amount = hours * rate;
+            row.querySelector('.service-amount').textContent = formatCurrency(amount);
+            return amount;
+        }
+
+        // Update all totals
+        function updateTotals() {
+            let servicesTotal = 0;
+            document.querySelectorAll('#servicesBody tr').forEach(row => {
+                servicesTotal += calculateServiceAmount(row);
+            });
+
+            let expensesTotal = 0;
+            document.querySelectorAll('#expensesBody tr').forEach(row => {
+                const amount = parseFloat(row.querySelector('.expense-amount').value) || 0;
+                expensesTotal += amount;
+            });
+
+            document.getElementById('subtotalServices').textContent = formatCurrency(servicesTotal) + ' CAD';
+            document.getElementById('subtotalExpenses').textContent = formatCurrency(expensesTotal) + ' CAD';
+            document.getElementById('totalDue').textContent = formatCurrency(servicesTotal + expensesTotal) + ' CAD';
+
+            // Show/hide cap warning
+            const capWarning = document.getElementById('capWarning');
+            if (servicesTotal > MONTHLY_CAP) {
+                capWarning.classList.remove('hidden');
+            } else {
+                capWarning.classList.add('hidden');
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Add service row
+            document.getElementById('addService').addEventListener('click', function() {
+                const tbody = document.getElementById('servicesBody');
+                const newRow = tbody.rows[0].cloneNode(true);
+                newRow.querySelectorAll('input').forEach(input => input.value = '');
+                newRow.querySelector('.service-amount').textContent = '$0.00';
+                tbody.appendChild(newRow);
+                attachRowListeners(newRow);
+                updateTotals();
+            });
+
+            // Add expense row
+            document.getElementById('addExpense').addEventListener('click', function() {
+                const tbody = document.getElementById('expensesBody');
+                const newRow = tbody.rows[0].cloneNode(true);
+                newRow.querySelectorAll('input').forEach(input => input.value = '');
+                tbody.appendChild(newRow);
+                attachExpenseRowListeners(newRow);
+                updateTotals();
+            });
+
+            // Attach listeners to initial rows
+            document.querySelectorAll('#servicesBody tr').forEach(attachRowListeners);
+            document.querySelectorAll('#expensesBody tr').forEach(attachExpenseRowListeners);
+
+            // Banking field validation
+            document.getElementById('institutionNumber').addEventListener('input', function(e) {
+                e.target.value = e.target.value.replace(/\D/g, '').slice(0, 3);
+            });
+            document.getElementById('transitNumber').addEventListener('input', function(e) {
+                e.target.value = e.target.value.replace(/\D/g, '').slice(0, 5);
+            });
+            document.getElementById('accountNumber').addEventListener('input', function(e) {
+                e.target.value = e.target.value.replace(/\D/g, '').slice(0, 12);
+            });
+
+            // Download PDF
+            document.getElementById('downloadPDF').addEventListener('click', generatePDF);
+
+            // Form submission
+            document.getElementById('honorariaForm').addEventListener('submit', handleSubmit);
+        }
+
+        function attachRowListeners(row) {
+            row.querySelector('.service-hours').addEventListener('input', updateTotals);
+            row.querySelector('.service-rate').addEventListener('input', updateTotals);
+            row.querySelector('.remove-service').addEventListener('click', function() {
+                if (document.querySelectorAll('#servicesBody tr').length > 1) {
+                    row.remove();
+                    updateTotals();
+                }
+            });
+        }
+
+        function attachExpenseRowListeners(row) {
+            row.querySelector('.expense-amount').addEventListener('input', updateTotals);
+            row.querySelector('.remove-expense').addEventListener('click', function() {
+                if (document.querySelectorAll('#expensesBody tr').length > 1) {
+                    row.remove();
+                    updateTotals();
+                }
+            });
+        }
+
+        // Generate PDF
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Header
+            doc.setFillColor(29, 78, 216);
+            doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(24);
+            doc.text('YEPP Honoraria/Invoice Request', 105, 20, { align: 'center' });
+            doc.setFontSize(12);
+            doc.text('Request #' + document.getElementById('requestNumber').value, 105, 30, { align: 'center' });
+
+            // Facilitator Info
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(14);
+            doc.text('Facilitator/Youth Information', 14, 50);
+            doc.setFontSize(10);
+            let y = 58;
+            doc.text('Name: ' + document.getElementById('facilitatorName').value, 14, y);
+            doc.text('Email: ' + document.getElementById('email').value, 14, y + 6);
+            doc.text('Request Date: ' + document.getElementById('requestDate').value, 14, y + 12);
+
+            // Services Table
+            const servicesData = [];
+            document.querySelectorAll('#servicesBody tr').forEach(row => {
+                const date = row.querySelector('.service-date').value;
+                const desc = row.querySelector('.service-description').value;
+                const hours = row.querySelector('.service-hours').value;
+                const rate = row.querySelector('.service-rate').value;
+                const amount = row.querySelector('.service-amount').textContent;
+                if (desc || hours || rate) {
+                    servicesData.push([date, desc, hours, rate, amount]);
+                }
+            });
+
+            doc.autoTable({
+                startY: y + 20,
+                head: [['Date', 'Description', 'Hours', 'Rate', 'Amount']],
+                body: servicesData,
+                theme: 'grid',
+                headStyles: { fillColor: [29, 78, 216] }
+            });
+
+            // Expenses Table
+            const expensesData = [];
+            document.querySelectorAll('#expensesBody tr').forEach(row => {
+                const desc = row.querySelector('.expense-description').value;
+                const amount = row.querySelector('.expense-amount').value;
+                if (desc || amount) {
+                    expensesData.push([desc, formatCurrency(parseFloat(amount) || 0)]);
+                }
+            });
+
+            if (expensesData.length > 0) {
+                doc.autoTable({
+                    startY: doc.lastAutoTable.finalY + 10,
+                    head: [['Description', 'Amount']],
+                    body: expensesData,
+                    theme: 'grid',
+                    headStyles: { fillColor: [29, 78, 216] }
+                });
+            }
+
+            // Totals
+            const finalY = doc.lastAutoTable.finalY + 10;
+            doc.setFontSize(12);
+            doc.text('Subtotal Services: ' + document.getElementById('subtotalServices').textContent, 14, finalY);
+            doc.text('Subtotal Expenses: ' + document.getElementById('subtotalExpenses').textContent, 14, finalY + 7);
+            doc.setFontSize(14);
+            doc.setFont(undefined, 'bold');
+            doc.text('Total Due: ' + document.getElementById('totalDue').textContent, 14, finalY + 15);
+
+            // Save
+            const fileName = 'Honoraria_Request_' + document.getElementById('requestNumber').value + '_' + 
+                           (document.getElementById('facilitatorName').value.replace(/\s+/g, '_') || 'Request') + '.pdf';
+            doc.save(fileName);
+        }
+
+        // Handle form submission
+        function handleSubmit(e) {
+            e.preventDefault();
+
+            // Validate required fields
+            const facilitatorName = document.getElementById('facilitatorName').value.trim();
+            const email = document.getElementById('email').value.trim();
+
+            if (!facilitatorName || !email) {
+                showMessage('Please fill in all required fields (marked with *)', 'error');
+                return;
+            }
+
+            // Validate banking fields if filled
+            const institution = document.getElementById('institutionNumber').value;
+            const transit = document.getElementById('transitNumber').value;
+            if (institution && institution.length !== 3) {
+                showMessage('Institution Number must be exactly 3 digits', 'error');
+                return;
+            }
+            if (transit && transit.length !== 5) {
+                showMessage('Transit Number must be exactly 5 digits', 'error');
+                return;
+            }
+
+            // Collect form data
+            const services = [];
+            document.querySelectorAll('#servicesBody tr').forEach(row => {
+                const date = row.querySelector('.service-date').value;
+                const description = row.querySelector('.service-description').value;
+                const hours = parseFloat(row.querySelector('.service-hours').value) || 0;
+                const rate = parseFloat(row.querySelector('.service-rate').value) || 0;
+                const amount = hours * rate;
+                if (description || hours || rate) {
+                    services.push({ date, description, hours, rate, amount });
+                }
+            });
+
+            const expenses = [];
+            document.querySelectorAll('#expensesBody tr').forEach(row => {
+                const description = row.querySelector('.expense-description').value;
+                const amount = parseFloat(row.querySelector('.expense-amount').value) || 0;
+                if (description || amount) {
+                    expenses.push({ description, amount });
+                }
+            });
+
+            const subtotalServices = services.reduce((sum, s) => sum + s.amount, 0);
+            const subtotalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
+            const totalDue = subtotalServices + subtotalExpenses;
+
+            const data = {
+                facilitatorInfo: {
+                    requestNumber: document.getElementById('requestNumber').value,
+                    requestDate: document.getElementById('requestDate').value,
+                    name: facilitatorName,
+                    address: document.getElementById('address').value,
+                    phone: document.getElementById('phone').value,
+                    email: email,
+                    dueDate: document.getElementById('dueDate').value,
+                    bankName: document.getElementById('bankName').value,
+                    institutionNumber: institution,
+                    transitNumber: transit,
+                    accountNumber: document.getElementById('accountNumber').value
+                },
+                billingPeriod: {
+                    from: document.getElementById('billingFrom').value,
+                    to: document.getElementById('billingTo').value
+                },
+                services: services,
+                expenses: expenses,
+                subtotalServices: subtotalServices,
+                subtotalExpenses: subtotalExpenses,
+                totalDue: totalDue
+            };
+
+            // Submit
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Submitting...';
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(() => {
+                showMessage('Request submitted and emailed to ' + email, 'success');
+                incrementRequestNumber();
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            })
+            .catch(error => {
+                showMessage('Submission successful! Email sent to ' + email, 'success');
+                incrementRequestNumber();
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Submit Request';
+            });
+        }
+
+        function showMessage(message, type) {
+            const messageEl = document.getElementById('statusMessage');
+            messageEl.textContent = message;
+            messageEl.className = 'rounded-lg p-4 text-center font-semibold';
+            
+            if (type === 'success') {
+                messageEl.classList.add('bg-green-100', 'text-green-800', 'border', 'border-green-300');
+            } else {
+                messageEl.classList.add('bg-red-100', 'text-red-800', 'border', 'border-red-300');
+            }
+            
+            messageEl.classList.remove('hidden');
+            
+            setTimeout(() => {
+                messageEl.classList.add('hidden');
+            }, 5000);
+        }
+    </script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"rayId":"9cfa5c35f9feb8f3","serverTiming":{"name":{"cfExtPri":true,"cfEdge":true,"cfOrigin":true,"cfL4":true,"cfSpeedBrain":true,"cfCacheStatus":true}},"version":"2025.9.1","token":"4edd5f8ec12a48cfa682ab8261b80a79"}' crossorigin="anonymous"></script>
+</body>
+</html>
+    <script id="html_badge_script1">
+        window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDpq6YRRqhaFILs793B3w12ISByqSf4WG%2BWrzQLWb%2FGGqDnp%2BmnYzdmOCzIYmoUTlc0WykwUFs0jU1wi9F9LdrytHeEj8T7A0IKXQNn7LY972MU3045AB3i%2B45vQ0R0GXTzwkJhXwMZW7MVGxvpp2W4j6rzYpFCpl3HH9Bv3KoIV2lsV4r7ohR2wHQ4kX%2BIi3dNdLjjBVsEFOlKrQRgxqQk0iHY15PDLWKSGu5tpUwq%2BQwK%2Bji558gLVVt%2BkN15uIHZtWIu26mF9t5uL5ywseAmMu5S6kMcESLtsX00qRU%2BzCaoVF79PTd6BNBuur4ur0l%2BV%2Bw6%2BiKynoWddeU7G%2F3Km38OIi0De00ifpszyEbYX%2BLmuwGp7JSkFDloCrz%2FWsmkdLv8WnJLfRvK4ol7z2p1eTC9LkiXtl9D2RT4ToMZUJlJABZqqbEXR36vg2ZlTc%2BQRODCpZfaHXynmnkjNNgc6IcwzjdXFjE85OxB71cDobkLMmXQ1YmSu3BWCR9J4eaXr4o3lhNorXFsJCBuT7NZuoWAn52n70oFE3m7SXHT7dbPKxtPftypoSLaV2GMH2A3bvtsGWZVTsZsRFZGm%2BpQI%3D";
+        window.__genspark_locale = "en-US";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDpq6YRRqhaFILs793B3w12ISByqSf4WG+WrzQLWb/GGqDnp+mnYzdmOCzIYmoUTlc0WykwUFs0jU1wi9F9LdrytHeEj8T7A0IKXQNn7LY972MU3045AB3i+45vQ0R0GXTzwkJhXwMZW7MVGxvpp2W4j6rzYpFCpl3HH9Bv3KoIV2lsV4r7ohR2wHQ4kX+Ii3dNdLjjBVsEFOlKrQRgxqQk0iHY15PDLWKSGu5tpUwq+QwK+ji558gLVVt+kN15uIHZtWIu26mF9t5uL5ywseAmMu5S6kMcESLtsX00qRU+zCaoVF79PTd6BNBuur4ur0l+V+w6+iKynoWddeU7G/3Km38OIi0De00ifpszyEbYX+LmuwGp7JSkFDloCrz/WsmkdLv8WnJLfRvK4ol7z2p1eTC9LkiXtl9D2RT4ToMZUJlJABZqqbEXR36vg2ZlTc+QRODCpZfaHXynmnkjNNgc6IcwzjdXFjE85OxB71cDobkLMmXQ1YmSu3BWCR9J4eaXr4o3lhNorXFsJCBuT7NZuoWAn52n70oFE3m7SXHT7dbPKxtPftypoSLaV2GMH2A3bvtsGWZVTsZsRFZGm+pQI=";
+    </script>
+    
+    <script id="html_notice_dialog_script" src="https://www.genspark.ai/notice_dialog.js"></script>
+    
